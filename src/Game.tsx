@@ -126,8 +126,12 @@ class Game extends Component<{}, IGameState> {
     const squares = this.state.squares.slice();
     const square = squares[ind];
 
-    // start timer on first reveal
-    if (this.state.timeElapsed === 0) this.startTimer();
+    if (this.state.gameState == "new")
+    {
+      this.setState({ gameState: "in-progress" });
+      this.startTimer();
+    }
+    else if (this.state.gameState != "in-progress") return;
 
     // skip revealed squares in auto mode
     if (auto && square.isRevealed) return;
