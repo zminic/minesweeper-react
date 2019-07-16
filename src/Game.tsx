@@ -43,6 +43,7 @@ class Game extends Component<{}, IGameState> {
     };
   }
 
+  /** Level dropdown changed */
   levelSelected(event: React.ChangeEvent<HTMLSelectElement>)
   {
     let level = this.state.levels.find(x => x.name === event.currentTarget.value);
@@ -50,8 +51,13 @@ class Game extends Component<{}, IGameState> {
     if (level) this.newGame(level);
   }
 
+  /** Get random number between 0 and max */
   getRandomNumber = (max: number) => Math.floor((Math.random() * 1000) + 1) % max;
 
+  /**
+   * Start new game and initialize all fields
+   * @param level 
+   */
   newGame(level: ILevel)
   {
     this.stopTimer();
@@ -64,6 +70,10 @@ class Game extends Component<{}, IGameState> {
     });
   }
 
+  /**
+   * Initialize level (create squares, plant mines, calculate distances)
+   * @param level - Level to initialize
+   */
   initSquares(level: ILevel)
   {
     const squareCount = level.dimension * level.dimension;
@@ -108,7 +118,7 @@ class Game extends Component<{}, IGameState> {
   flagSquare(ind: number)
   {
     // allow flagging square only when game is in progress
-    if (this.state.gameState != "in-progress") return;
+    if (this.state.gameState !== "in-progress") return;
 
     const squares = this.state.squares.slice();
     const square = squares[ind];
@@ -129,11 +139,13 @@ class Game extends Component<{}, IGameState> {
     const squares = this.state.squares.slice();
     const square = squares[ind];
 
+    // start timer on first reveal
     if (this.state.gameState == "new")
     {
       this.setState({ gameState: "in-progress" });
       this.startTimer();
     }
+    // don't allow reveal if game is not in progress
     else if (this.state.gameState != "in-progress") return;
 
     // skip revealed squares in auto mode
@@ -151,6 +163,7 @@ class Game extends Component<{}, IGameState> {
 
       if (square.mineCount === fieldsWithFlags.length)
       {
+        // auto reveal fields if all mines in adjacent fields are flagged
         this.getAdjacentFields(level, squares, ind).filter(s => !s.isRevealed && !s.isFlag)
           .forEach(s => this.revealSquare(s.index, true));
       }
@@ -160,6 +173,7 @@ class Game extends Component<{}, IGameState> {
       square.isRevealed = true;
       square.isFlag = false;
 
+      // auto reveal fields that have no mines in adjacent fields
       if (square.mineCount === 0)
         this.getAdjacentFields(level, squares, ind)
           .forEach(s => this.revealSquare(s.index, true));
@@ -188,6 +202,12 @@ class Game extends Component<{}, IGameState> {
     this.setState({ squares: squares });
   }
 
+  /**
+   * Return all fields that can be reached from this square
+   * @param level Level information
+   * @param squares Board representation (array of squares)
+   * @param ind Index of current square
+   */
   getAdjacentFields(level: ILevel, squares: ISquare[], ind: number)
   {
     const dim = level.dimension;
