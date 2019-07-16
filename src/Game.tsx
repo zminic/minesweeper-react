@@ -4,7 +4,10 @@ import './Game.css';
 import Board from './Board';
 
 class Game extends Component<{}, IGameState> {
-  constructor(props : {})
+
+  private timer: number = 0;
+
+  constructor(props: {})
   {
     super(props);
 
@@ -29,11 +32,12 @@ class Game extends Component<{}, IGameState> {
         dimension: 16,
         mineCount: 60
       }],
-      gameOver: false
+      timeElapsed: 0
     };
 
     this.state = {
       ...state,
+      gameState: "new",
       selectedLevel: state.levels[0],
       squares: this.initSquares(state.levels[0])
     };
@@ -43,16 +47,22 @@ class Game extends Component<{}, IGameState> {
   {
     let level = this.state.levels.find(x => x.name === event.currentTarget.value);
 
-    if (level)
-    {
-      this.setState({
-        selectedLevel: level,
-        squares: this.initSquares(level)
-      });
-    }
+    if (level) this.newGame(level);
   }
 
   getRandomNumber = (max: number) => Math.floor((Math.random() * 1000) + 1) % max;
+
+  newGame(level: ILevel)
+  {
+    this.stopTimer();
+
+    this.setState({
+      selectedLevel: level,
+      squares: this.initSquares(level),
+      gameState: "new",
+      timeElapsed: 0
+    });
+  }
 
   initSquares(level: ILevel)
   {
@@ -77,7 +87,7 @@ class Game extends Component<{}, IGameState> {
     {
       var index = this.getRandomNumber(squareCount);
 
-      if (squares[index] && ! squares[index].isMine) {
+      if (!squares[index].isMine) {
         squares[index].isMine = true;
         mines++;
       }
@@ -88,7 +98,7 @@ class Game extends Component<{}, IGameState> {
     {
       if (!squares[i].isMine)
       {
-        squares[i].mineCount = this.getAdjacentFields(level, squares, i, s => s.isMine).length;
+        squares[i].mineCount = this.getAdjacentFields(level, squares, i).filter(s => s.isMine).length;
       }
     }
 
@@ -116,19 +126,25 @@ class Game extends Component<{}, IGameState> {
     const squares = this.state.squares.slice();
     const square = squares[ind];
 
+    // start timer on first reveal
+    if (this.state.timeElapsed === 0) this.startTimer();
+
+    // skip revealed squares in auto mode
     if (auto && square.isRevealed) return;
 
     if (square.isMine)
     {
+      this.setState({ gameState: "lost" });
+      this.stopTimer();
       this.revealBoard();
     }
     else if (square.isRevealed && !auto)
     {
-      let fieldsWithFlags = this.getAdjacentFields(level, squares, ind, s => s.isFlag);
+      let fieldsWithFlags = this.getAdjacentFields(level, squares, ind).filter(s => s.isFlag);
 
       if (square.mineCount === fieldsWithFlags.length)
       {
-        this.getAdjacentFields(level, squares, ind, s => !s.isRevealed && !s.isFlag)
+        this.getAdjacentFields(level, squares, ind).filter(s => !s.isRevealed && !s.isFlag)
           .forEach(s => this.revealSquare(s.index, true));
       }
     }
@@ -140,28 +156,32 @@ class Game extends Component<{}, IGameState> {
       if (square.mineCount === 0)
         this.getAdjacentFields(level, squares, ind)
           .forEach(s => this.revealSquare(s.index, true));
+
+      // check for game over
+      if (squares.filter(s => !s.isRevealed).length === level.mineCount)
+      {
+        this.setState({ gameState: "won" });
+        this.stopTimer();
+      }
     }
 
-    this.setState({
-      squares: squares
-    });
+    this.setState({ squares: squares });
   }
 
+  /**
+   * Reveal whole board, used when mine is revealed
+   */
   revealBoard()
   {
     const squares = this.state.squares.slice();
 
     for (let i = 0 ; i < squares.length; i++)
-    {
       squares[i].isRevealed = true;
-    }
 
-    this.setState({
-      squares: squares
-    });
+    this.setState({ squares: squares });
   }
 
-  getAdjacentFields(level: ILevel, squares: ISquare[], ind: number, filter?: (s: ISquare) => boolean)
+  getAdjacentFields(level: ILevel, squares: ISquare[], ind: number)
   {
     const dim = level.dimension;
     const len = dim * dim;
@@ -201,7 +221,36 @@ class Game extends Component<{}, IGameState> {
     if (ind + dim + 1 < len && !isLastColumn(ind - dim))
         result.push(squares[ind + dim + 1]);
 
-    return filter ? result.filter(filter) : result;
+    return result;
+  }
+
+  stopTimer = () =>  clearInterval(this.timer);
+
+  startTimer()
+  {
+    this.stopTimer();
+
+    this.timer = window.setInterval(()=> { 
+      this.setState({
+        timeElapsed: this.state.timeElapsed + 0.1
+      })
+     }, 100);
+  }
+
+  statusMessage()
+  {
+      let elapsed = this.state.timeElapsed.toFixed(1);
+
+      switch(this.state.gameState)
+      {
+        case "new":
+        case "in-progress":
+            return (<h2>Your time: {elapsed}</h2>);
+        case "won":
+          return (<h2>Game over! You won! ({elapsed} s)</h2>)
+        case "lost":
+          return (<h2>Game over! You lost! ({elapsed} s)</h2>)
+      }
   }
 
   render() {
@@ -213,11 +262,12 @@ class Game extends Component<{}, IGameState> {
 
     return (
       <div className="game">
-        <p>Difficulty</p>
-        <p>Selected level: {this.state.selectedLevel.name}</p>
+        {this.statusMessage() }
         <select onChange={(e) => this.levelSelected(e)}>
           {levelOptions}
         </select>
+
+        <button onClick={() => this.newGame(this.state.selectedLevel)}>New game</button>
 
         <Board 
           squares={this.state.squares} 

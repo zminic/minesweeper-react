@@ -34,7 +34,8 @@ interface IBoardProps
 interface IGameState
 {
     levels: ILevel[];
-    gameOver: boolean;
+    gameState: 'new' | 'in-progress' | 'won' | 'lost';
+    timeElapsed: number;
     selectedLevel: ILevel;
     squares: ISquare[];
 }
