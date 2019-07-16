@@ -34,6 +34,7 @@ button.square.flag
 {
   background-image: url('images/flag.png');
   background-repeat: no-repeat;
+  background-position: center;
 }
 
 button.square.mine
