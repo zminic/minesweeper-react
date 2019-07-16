@@ -32,13 +32,13 @@ button.square.revealed
 
 button.square.flag
 {
-  background-image: url('/images/flag.png');
+  background-image: url('images/flag.png');
   background-repeat: no-repeat;
 }
 
 button.square.mine
 {
-  background-image: url('/images/mine.png');
+  background-image: url('images/mine.png');
   background-repeat: no-repeat;
   background-position: center;
 }
