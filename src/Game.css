@@ -1,0 +1,49 @@
+.game
+{
+  margin: 20px;
+}
+
+.board
+{
+  margin-top: 20px;
+  border: 1px outset #666;
+}
+
+button.square
+{
+  display: block;
+  float: left;
+  border: 1px inset #666;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  text-align: center;
+}
+
+button.square.break
+{
+  clear: left;
+}
+
+button.square.revealed
+{
+  background-color: #fff;
+}
+
+button.square.flag
+{
+  background-image: url('/images/flag.png');
+  background-repeat: no-repeat;
+}
+
+button.square.mine
+{
+  background-image: url('/images/mine.png');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+div.clear
+{
+  clear: both;
+}
