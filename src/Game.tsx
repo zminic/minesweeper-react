@@ -107,6 +107,9 @@ class Game extends Component<{}, IGameState> {
 
   flagSquare(ind: number)
   {
+    // allow flagging square only when game is in progress
+    if (this.state.gameState != "in-progress") return;
+
     const squares = this.state.squares.slice();
     const square = squares[ind];
 
