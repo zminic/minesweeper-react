@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import "./Board";
 import './Game.css';
 import Board from './Board';
+import Stats from './Stats';
+import LevelSelector from './LevelSelector';
 
 class Game extends Component<{}, IGameState> {
 
@@ -28,25 +29,17 @@ class Game extends Component<{}, IGameState> {
         name: 'Expert',
         width: 30,
         height: 16,
-        mineCount: 60
+        mineCount: 99
       }],
       timeElapsed: 0
     };
 
     this.state = {
       ...state,
-      gameState: "new",
+      gameStatus: "new",
       selectedLevel: state.levels[0],
       squares: this.initSquares(state.levels[0])
     };
-  }
-
-  /** Level dropdown changed */
-  levelSelected(event: React.ChangeEvent<HTMLSelectElement>)
-  {
-    let level = this.state.levels.find(x => x.name === event.currentTarget.value);
-
-    if (level) this.newGame(level);
   }
 
   /** Get random number between 0 and max */
@@ -63,7 +56,7 @@ class Game extends Component<{}, IGameState> {
     this.setState({
       selectedLevel: level,
       squares: this.initSquares(level),
-      gameState: "new",
+      gameStatus: "new",
       timeElapsed: 0
     });
   }
@@ -117,7 +110,7 @@ class Game extends Component<{}, IGameState> {
   flagSquare(ind: number)
   {
     // allow flagging square only when game is in progress
-    if (this.state.gameState !== "new" && this.state.gameState !== "in-progress") return;
+    if (this.state.gameStatus !== "new" && this.state.gameStatus !== "in-progress") return;
 
     const squares = this.state.squares.slice();
     const square = squares[ind];
@@ -139,13 +132,13 @@ class Game extends Component<{}, IGameState> {
     const square = squares[ind];
 
     // start timer on first reveal
-    if (this.state.gameState === "new")
+    if (this.state.gameStatus === "new")
     {
-      this.setState({ gameState: "in-progress" });
+      this.setState({ gameStatus: "in-progress" });
       this.startTimer();
     }
     // don't allow reveal if game is not in progress
-    else if (this.state.gameState !== "in-progress") return;
+    else if (this.state.gameStatus !== "in-progress") return;
 
     // skip revealed squares in auto mode
     if (auto && square.isRevealed) return;
@@ -156,7 +149,7 @@ class Game extends Component<{}, IGameState> {
     if (square.isMine)
     {
       square.isHighlighted = true;
-      this.setState({ gameState: "lost" });
+      this.setState({ gameStatus: "lost" });
       this.stopTimer();
       this.revealMines();
     }
@@ -184,7 +177,7 @@ class Game extends Component<{}, IGameState> {
       // check for game over
       if (squares.filter(s => !s.isRevealed).length === level.mineCount)
       {
-        this.setState({ gameState: "won" });
+        this.setState({ gameStatus: "won" });
         this.stopTimer();
       }
     }
@@ -262,27 +255,19 @@ class Game extends Component<{}, IGameState> {
   {
     this.stopTimer();
 
-    this.timer = window.setInterval(()=> { 
+    this.timer = window.setInterval(() => { 
       this.setState({
-        timeElapsed: this.state.timeElapsed + 0.1
+        timeElapsed: this.state.timeElapsed + 1
       })
-     }, 100);
+     }, 1000);
   }
 
-  statusMessage()
+  getUnflaggedMineCount()
   {
-      let elapsed = this.state.timeElapsed.toFixed(1);
+    const squares = this.state.squares.slice();
+    const level = this.state.selectedLevel;
 
-      switch(this.state.gameState)
-      {
-        case "new":
-        case "in-progress":
-            return (<h2>Your time: {elapsed}</h2>);
-        case "won":
-          return (<h2>Game over! You won! ({elapsed} s)</h2>)
-        case "lost":
-          return (<h2>Game over! You lost! ({elapsed} s)</h2>)
-      }
+    return level.mineCount - squares.filter(s => s.isFlag).length;
   }
 
   render() {
@@ -293,20 +278,17 @@ class Game extends Component<{}, IGameState> {
       levelOptions.push(<option key={level.name} value={level.name}>{level.name}</option>);
 
     return (
-      <div className="game">
-        {this.statusMessage() }
-        <select onChange={(e) => this.levelSelected(e)}>
-          {levelOptions}
-        </select>
+      <div className="game" style={{width: this.state.selectedLevel.width * 30 + 12}}>
+         
+        <LevelSelector levels={this.state.levels} OnLevelSelected={(level) => this.newGame(level) }></LevelSelector>
 
-        <button onClick={() => this.newGame(this.state.selectedLevel)}>New game</button>
+        <Stats mineCount={this.getUnflaggedMineCount()} gameStatus={this.state.gameStatus} timer={this.state.timeElapsed} onNewGame={() => this.newGame(this.state.selectedLevel)} ></Stats>
 
         <Board 
           squares={this.state.squares} 
           level={this.state.selectedLevel} 
           onReveal={(ind) => this.revealSquare(ind)}
           onFlag={(ind) => this.flagSquare(ind)}
-          style={{width: this.state.selectedLevel.width * 30}}
           ></Board>
       </div>
     );

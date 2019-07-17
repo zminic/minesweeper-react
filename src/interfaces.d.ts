@@ -30,14 +30,29 @@ interface IBoardProps
     level: ILevel;
     onReveal: (int) => void;
     onFlag: (int) => void;
-    style: React.CSSProperties
 }
+
+type GameStatus = 'new' | 'in-progress' | 'won' | 'lost';
 
 interface IGameState
 {
     levels: ILevel[];
-    gameState: 'new' | 'in-progress' | 'won' | 'lost';
+    gameStatus: GameStatus;
     timeElapsed: number;
     selectedLevel: ILevel;
     squares: ISquare[];
+}
+
+interface IStatsProps
+{
+    mineCount: number;
+    timer: number;
+    onNewGame: () => void;
+    gameStatus: GameStatus;
+}
+
+interface ILevelSelectorProps
+{
+    levels: ILevel[];
+    OnLevelSelected: (ILevel) => void;
 }

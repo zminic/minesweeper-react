@@ -18,7 +18,7 @@ class Board extends Component<IBoardProps> {
     }
 
     return (
-      <div className="board" style={this.props.style}>
+      <div className="board">
           {squares}
           <div className="clear"></div>
       </div>

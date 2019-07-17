@@ -1,12 +1,60 @@
+@font-face {
+  font-family: digital7;
+  src: url(fonts/digital-7.ttf);
+}
+
 .game
 {
-  margin: 20px;
+  border: 8px outset #ccc;
+  background-color: #ddd;
+}
+
+.level-selector
+{
+  border: 6px inset #ccc;
+  padding: 5px;
+}
+
+.stats
+{
+  padding: 4px;
+  border: 6px inset #ccc;
+  font-family: digital7;
+  font-size: 40px;
+  text-align: center;
+  line-height: 40px;
+}
+
+.stats .mine-count
+{
+  border: 2px inset #ccc;
+  width: 80px;
+  float: left;
+  color: red;
+  background-color: #000;
+}
+
+.stats .new-game
+{
+  border: 4px outset #ccc;
+  display: inline-block;
+  width: 40px;
+  cursor: pointer;
+  height: 36px;
+}
+
+.stats .timer
+{
+  border: 2px inset #ccc;
+  width: 80px;
+  float: right;
+  color: red;
+  background-color: #000;
 }
 
 .board
 {
-  margin-top: 20px;
-  border: 4px inset #ccc;
+  border: 6px inset #ccc;
 }
 
 button.square
@@ -28,10 +76,7 @@ button.square
   border-color: #fff #ccc #ccc #fff;
 }
 
-button.square.break
-{
-  clear: left;
-}
+button.square.break { clear: left; }
 
 button.square.revealed
 {
@@ -66,7 +111,4 @@ button.square.m6 { color: #669999; }
 button.square.m7 { color: #000000; }
 button.square.m8 { color: #d9d9d9; }
 
-div.clear
-{
-  clear: both;
-}
+div.clear { clear: both; }
