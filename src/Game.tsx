@@ -61,10 +61,7 @@ class Game extends Component<{}, IGameState> {
     });
   }
 
-  /**
-   * Initialize level (create squares, plant mines, calculate distances)
-   * @param level - Level to initialize
-   */
+  /** Initialize level (without planting mines, mines are planted on first reveal) */
   initSquares(level: ILevel)
   {
     const squareCount = level.width * level.height;
@@ -81,7 +78,13 @@ class Game extends Component<{}, IGameState> {
         mineCount: 0
       };
 
-    // plant mines
+    return squares;
+  }
+
+  /** Plant mines and calculate distances (this method mutates squares argument) */
+  plantMines(level: ILevel, squares: ISquare[], skipIndex: number)
+  {
+    const squareCount = level.width * level.height;
     let mines = 0;
 
     // plant mines
@@ -89,7 +92,7 @@ class Game extends Component<{}, IGameState> {
     {
       var index = this.getRandomNumber(squareCount);
 
-      if (!squares[index].isMine) {
+      if (index !== skipIndex && !squares[index].isMine) {
         squares[index].isMine = true;
         mines++;
       }
@@ -103,8 +106,6 @@ class Game extends Component<{}, IGameState> {
         squares[i].mineCount = this.getAdjacentFields(level, squares, i).filter(s => s.isMine).length;
       }
     }
-
-    return squares;
   }
 
   flagSquare(ind: number)
@@ -125,20 +126,41 @@ class Game extends Component<{}, IGameState> {
     }
   }
 
-  revealSquare(ind: number, auto: boolean = false)
+  /**
+   * Main method for revealing square (doesn't mutate state)
+   * @param ind Index of square to reveal
+   */
+  revealSquare(ind: number)
   {
     const level = this.state.selectedLevel;
     const squares = this.state.squares.slice();
-    const square = squares[ind];
 
-    // start timer on first reveal
+    // start timer and plant mines on first reveal
     if (this.state.gameStatus === "new")
     {
-      this.setState({ gameStatus: "in-progress" });
+      this.plantMines(level, squares, ind);
       this.startTimer();
+      this.setState({ gameStatus: "in-progress" });
     }
     // don't allow reveal if game is not in progress
     else if (this.state.gameStatus !== "in-progress") return;
+
+    this.revealSquareInternal(level, squares, ind, false);
+
+    // update squares after reveal
+    this.setState({ squares: squares });
+  }
+
+  /**
+   * Inner method that mutates squares argument, in this way recursive changes don't have to read and update state every time
+   * @param level Current level
+   * @param squares Current board
+   * @param ind Index of square to reveal
+   * @param auto Auto reveal mode
+   */
+  private revealSquareInternal(level: ILevel, squares: ISquare[], ind: number, auto: boolean = false)
+  {
+    const square = squares[ind];
 
     // skip revealed squares in auto mode
     if (auto && square.isRevealed) return;
@@ -161,7 +183,7 @@ class Game extends Component<{}, IGameState> {
       {
         // auto reveal fields if all mines in adjacent fields are flagged
         this.getAdjacentFields(level, squares, ind).filter(s => !s.isRevealed && !s.isFlag)
-          .forEach(s => this.revealSquare(s.index, true));
+          .forEach(s => this.revealSquareInternal(level, squares, s.index, true));
       }
     }
     else
@@ -172,7 +194,7 @@ class Game extends Component<{}, IGameState> {
       // auto reveal fields that have no mines in adjacent fields
       if (square.mineCount === 0)
         this.getAdjacentFields(level, squares, ind)
-          .forEach(s => this.revealSquare(s.index, true));
+          .forEach(s => this.revealSquareInternal(level, squares, s.index, true));
 
       // check for game over
       if (squares.filter(s => !s.isRevealed).length === level.mineCount)
@@ -181,8 +203,6 @@ class Game extends Component<{}, IGameState> {
         this.stopTimer();
       }
     }
-
-    this.setState({ squares: squares });
   }
 
   /**
@@ -264,10 +284,9 @@ class Game extends Component<{}, IGameState> {
 
   getUnflaggedMineCount()
   {
-    const squares = this.state.squares.slice();
     const level = this.state.selectedLevel;
 
-    return level.mineCount - squares.filter(s => s.isFlag).length;
+    return level.mineCount - this.state.squares.filter(s => s.isFlag).length;
   }
 
   render() {
