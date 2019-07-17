@@ -13,22 +13,17 @@ class Game extends Component<{}, IGameState> {
 
     let state = {
       levels: [{
-        name: 'Easy',
-        dimension: 7,
-        mineCount: 5
-      },
-      {
         name: 'Beginner',
         dimension: 9,
         mineCount: 10
       },
       {
         name: 'Intermediate',
-        dimension: 12,
-        mineCount: 24
+        dimension: 16,
+        mineCount: 40
       },
       {
-        name: 'Advanced',
+        name: 'Expert',
         dimension: 16,
         mineCount: 60
       }],
@@ -85,6 +80,7 @@ class Game extends Component<{}, IGameState> {
         isRevealed: false,
         isMine: false,
         isFlag: false,
+        isHighlighted: false,
         index: i,
         mineCount: 0
       };
@@ -118,7 +114,7 @@ class Game extends Component<{}, IGameState> {
   flagSquare(ind: number)
   {
     // allow flagging square only when game is in progress
-    if (this.state.gameState !== "in-progress") return;
+    if (this.state.gameState !== "new" && this.state.gameState !== "in-progress") return;
 
     const squares = this.state.squares.slice();
     const square = squares[ind];
@@ -140,22 +136,23 @@ class Game extends Component<{}, IGameState> {
     const square = squares[ind];
 
     // start timer on first reveal
-    if (this.state.gameState == "new")
+    if (this.state.gameState === "new")
     {
       this.setState({ gameState: "in-progress" });
       this.startTimer();
     }
     // don't allow reveal if game is not in progress
-    else if (this.state.gameState != "in-progress") return;
+    else if (this.state.gameState !== "in-progress") return;
 
     // skip revealed squares in auto mode
     if (auto && square.isRevealed) return;
 
     if (square.isMine)
     {
+      square.isHighlighted = true;
       this.setState({ gameState: "lost" });
       this.stopTimer();
-      this.revealBoard();
+      this.revealMines();
     }
     else if (square.isRevealed && !auto)
     {
@@ -192,12 +189,13 @@ class Game extends Component<{}, IGameState> {
   /**
    * Reveal whole board, used when mine is revealed
    */
-  revealBoard()
+  revealMines()
   {
     const squares = this.state.squares.slice();
 
     for (let i = 0 ; i < squares.length; i++)
-      squares[i].isRevealed = true;
+      if (squares[i].isMine)
+        squares[i].isRevealed = true;
 
     this.setState({ squares: squares });
   }
@@ -301,7 +299,7 @@ class Game extends Component<{}, IGameState> {
           level={this.state.selectedLevel} 
           onReveal={(ind) => this.revealSquare(ind)}
           onFlag={(ind) => this.flagSquare(ind)}
-          style={{width: this.state.selectedLevel.dimension * 40}}
+          style={{width: this.state.selectedLevel.dimension * 30}}
           ></Board>
       </div>
     );

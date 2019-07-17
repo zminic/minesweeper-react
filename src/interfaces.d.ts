@@ -3,6 +3,7 @@ interface ISquare
     isRevealed: boolean;
     isMine: boolean;
     isFlag: boolean;
+    isHighlighted: boolean;
     index: number;
     mineCount: number;
 }

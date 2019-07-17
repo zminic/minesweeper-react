@@ -5,6 +5,7 @@ const Square: React.FC<ISquareProps> = (props) => {
   let classNames = ['square'];
 
     if (props.className) classNames.push(props.className);
+    if (props.value.mineCount) classNames.push('m' + props.value.mineCount);
 
     if (!props.value.isRevealed)
     {
@@ -15,6 +16,7 @@ const Square: React.FC<ISquareProps> = (props) => {
         classNames.push('revealed');
 
         if (props.value.isMine) classNames.push('mine');
+        if (props.value.isHighlighted) classNames.push('highlight');
     }
 
     let displayValue = props.value.isRevealed && !props.value.isMine && props.value.mineCount !== 0 ? props.value.mineCount : '';
