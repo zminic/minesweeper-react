@@ -11,7 +11,8 @@ interface ISquare
 interface ILevel
 {
     name: string;
-    dimension: number;
+    width: number;
+    height: number;
     mineCount: number;
 }
 

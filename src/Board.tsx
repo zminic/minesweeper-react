@@ -11,7 +11,7 @@ class Board extends Component<IBoardProps> {
         squares.push(<Square
             key={i} 
             value={this.props.squares[i]} 
-            className={i % this.props.level.dimension === 0  ? 'break' : ''}
+            className={i % this.props.level.width === 0  ? 'break' : ''}
             onClick={() => this.props.onReveal(i)}
             onContextMenu={() => this.props.onFlag(i)}
             ></Square>);

@@ -14,17 +14,20 @@ class Game extends Component<{}, IGameState> {
     let state = {
       levels: [{
         name: 'Beginner',
-        dimension: 9,
+        width: 9,
+        height: 9,
         mineCount: 10
       },
       {
         name: 'Intermediate',
-        dimension: 16,
+        width: 16,
+        height: 16,
         mineCount: 40
       },
       {
         name: 'Expert',
-        dimension: 16,
+        width: 30,
+        height: 16,
         mineCount: 60
       }],
       timeElapsed: 0
@@ -71,7 +74,7 @@ class Game extends Component<{}, IGameState> {
    */
   initSquares(level: ILevel)
   {
-    const squareCount = level.dimension * level.dimension;
+    const squareCount = level.width * level.height;
 
     let squares = Array(squareCount).fill(null);
 
@@ -147,6 +150,9 @@ class Game extends Component<{}, IGameState> {
     // skip revealed squares in auto mode
     if (auto && square.isRevealed) return;
 
+    // do not reveal flagged square
+    if (square.isFlag) return;
+
     if (square.isMine)
     {
       square.isHighlighted = true;
@@ -208,19 +214,20 @@ class Game extends Component<{}, IGameState> {
    */
   getAdjacentFields(level: ILevel, squares: ISquare[], ind: number)
   {
-    const dim = level.dimension;
-    const len = dim * dim;
+    const width = level.width;
+    const height = level.height;
+    const len = width * height;
     let result = [];
-    let isFirstColumn = (i: number) => i % dim === 0 && i !== 0;
-    let isLastColumn = (i: number) => (i + 1) % dim === 0 && i !== len - 1;
+    let isFirstColumn = (i: number) => i % width === 0 && i !== 0;
+    let isLastColumn = (i: number) => (i + 1) % width === 0 && i !== len - 1;
 
     // up
-    if (ind - dim >= 0)
-    result.push(squares[ind - dim]);
+    if (ind - width >= 0)
+    result.push(squares[ind - width]);
 
     // down
-    if (ind + dim < len)
-        result.push(squares[ind + dim]);
+    if (ind + width < len)
+        result.push(squares[ind + width]);
 
     // left
     if (ind - 1 >= 0 && !isFirstColumn(ind))
@@ -231,20 +238,20 @@ class Game extends Component<{}, IGameState> {
         result.push(squares[ind + 1]);
 
     // up left
-    if (ind - dim - 1 >= 0 && !isFirstColumn(ind - dim))
-        result.push(squares[ind - dim - 1]);
+    if (ind - width - 1 >= 0 && !isFirstColumn(ind - width))
+        result.push(squares[ind - width - 1]);
 
     // up right
-    if (ind - dim + 1 >= 0 && !isLastColumn(ind - dim))
-        result.push(squares[ind - dim + 1]);
+    if (ind - width + 1 >= 0 && !isLastColumn(ind - width))
+        result.push(squares[ind - width + 1]);
 
     // bottom left
-    if (ind + dim - 1 < len && !isFirstColumn(ind + dim))
-        result.push(squares[ind + dim - 1]);
+    if (ind + width - 1 < len && !isFirstColumn(ind + width))
+        result.push(squares[ind + width - 1]);
 
     // bottom right
-    if (ind + dim + 1 < len && !isLastColumn(ind - dim))
-        result.push(squares[ind + dim + 1]);
+    if (ind + width + 1 < len && !isLastColumn(ind - width))
+        result.push(squares[ind + width + 1]);
 
     return result;
   }
@@ -299,7 +306,7 @@ class Game extends Component<{}, IGameState> {
           level={this.state.selectedLevel} 
           onReveal={(ind) => this.revealSquare(ind)}
           onFlag={(ind) => this.flagSquare(ind)}
-          style={{width: this.state.selectedLevel.dimension * 30}}
+          style={{width: this.state.selectedLevel.width * 30}}
           ></Board>
       </div>
     );
