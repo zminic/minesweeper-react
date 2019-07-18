@@ -2,10 +2,9 @@ import React from 'react';
 
 const LevelSelector: React.FC<ILevelSelectorProps> = (props) => {
 
-  const levelOptions = [];
-
-  for (var level of props.levels)
-    levelOptions.push(<option key={level.name} value={level.name}>{level.name}</option>);
+  const levelOptions = props.levels.map(level => 
+    <option key={level.name} value={level.name}>{level.name}</option>
+  );
 
   let onLevelSelected = (e: React.ChangeEvent<HTMLSelectElement>) => 
   {
