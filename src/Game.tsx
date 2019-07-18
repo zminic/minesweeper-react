@@ -120,9 +120,7 @@ class Game extends Component<{}, IGameState> {
     {
       square.isFlag = !square.isFlag;
 
-      this.setState({
-        squares: squares
-      });
+      this.setState({ squares: squares });
     }
   }
 
@@ -276,9 +274,9 @@ class Game extends Component<{}, IGameState> {
     this.stopTimer();
 
     this.timer = window.setInterval(() => { 
-      this.setState({
-        timeElapsed: this.state.timeElapsed + 1
-      })
+      this.setState((state) => ({
+        timeElapsed: state.timeElapsed + 1
+      }))
      }, 1000);
   }
 
