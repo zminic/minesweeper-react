@@ -288,12 +288,6 @@ class Game extends Component<{}, IGameState> {
   }
 
   render() {
-
-    const levelOptions = [];
-
-    for (var level of this.state.levels)
-      levelOptions.push(<option key={level.name} value={level.name}>{level.name}</option>);
-
     return (
       <div className="game" style={{width: this.state.selectedLevel.width * 30 + 12}}>
          

@@ -2,18 +2,15 @@ import React from 'react';
 import Square from './Square';
 
 const Board: React.FC<IBoardProps> = (props) => {
-    const squares = [];
-
-    for (let i = 0; i < props.squares.length; i++)
-    {      
-        squares.push(<Square
+    const squares = props.squares.map((square: ISquare, i: number) =>
+        <Square
             key={i} 
-            value={props.squares[i]} 
+            value={square} 
             className={i % props.level.width === 0  ? 'break' : ''}
             onClick={() => props.onReveal(i)}
             onContextMenu={() => props.onFlag(i)}
-            ></Square>);
-    }
+        ></Square>
+    );
 
     return (
       <div className="board">

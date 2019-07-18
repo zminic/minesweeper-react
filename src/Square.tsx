@@ -4,28 +4,28 @@ const Square: React.FC<ISquareProps> = (props) => {
 
   let classNames = ['square'];
 
-    if (props.className) classNames.push(props.className);
-    if (props.value.mineCount) classNames.push('m' + props.value.mineCount);
+  if (props.className) classNames.push(props.className);
+  if (props.value.mineCount) classNames.push('m' + props.value.mineCount);
 
-    if (!props.value.isRevealed)
-    {
-        if (props.value.isFlag) classNames.push('flag');
-    }
-    else
-    {
-        classNames.push('revealed');
+  if (!props.value.isRevealed)
+  {
+      if (props.value.isFlag) classNames.push('flag');
+  }
+  else
+  {
+      classNames.push('revealed');
 
-        if (props.value.isMine) classNames.push('mine');
-        if (props.value.isHighlighted) classNames.push('highlight');
-    }
+      if (props.value.isMine) classNames.push('mine');
+      if (props.value.isHighlighted) classNames.push('highlight');
+  }
 
-    let displayValue = props.value.isRevealed && !props.value.isMine && props.value.mineCount !== 0 ? props.value.mineCount : '';
+  let displayValue = props.value.isRevealed && !props.value.isMine && props.value.mineCount !== 0 ? props.value.mineCount : '';
 
-    let onContextMenu = (e: React.MouseEvent) =>
-    {
-        props.onContextMenu(e);
-        e.preventDefault();
-    };
+  let onContextMenu = (e: React.MouseEvent) =>
+  {
+      props.onContextMenu(e);
+      e.preventDefault();
+  };
 
   return (
     <button 
