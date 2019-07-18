@@ -1,19 +1,17 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Square from './Square';
 
-class Board extends Component<IBoardProps> {
-  render() 
-  {
+const Board: React.FC<IBoardProps> = (props) => {
     const squares = [];
 
-    for (let i = 0; i < this.props.squares.length; i++)
+    for (let i = 0; i < props.squares.length; i++)
     {      
         squares.push(<Square
             key={i} 
-            value={this.props.squares[i]} 
-            className={i % this.props.level.width === 0  ? 'break' : ''}
-            onClick={() => this.props.onReveal(i)}
-            onContextMenu={() => this.props.onFlag(i)}
+            value={props.squares[i]} 
+            className={i % props.level.width === 0  ? 'break' : ''}
+            onClick={() => props.onReveal(i)}
+            onContextMenu={() => props.onFlag(i)}
             ></Square>);
     }
 
@@ -23,7 +21,6 @@ class Board extends Component<IBoardProps> {
           <div className="clear"></div>
       </div>
     );
-  }
 }
 
 export default Board;
