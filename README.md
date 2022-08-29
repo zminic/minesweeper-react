@@ -2,8 +2,6 @@
 
 A Minesweeper game created with React and Typescript.
 
-Try [Demo](https://therealmofcode.com/minesweeper-react/).
-
 ### This project uses following free resources:
 
 1. Digital-7 font by [Sizenko Alexander](http://www.styleseven.com).
