@@ -1,16 +1,14 @@
 {
   "files": {
-    "main.css": "/minesweeper-react/static/css/main.334d6d91.chunk.css",
-    "main.js": "/minesweeper-react/static/js/main.6c6c11b5.chunk.js",
-    "main.js.map": "/minesweeper-react/static/js/main.6c6c11b5.chunk.js.map",
-    "runtime~main.js": "/minesweeper-react/static/js/runtime~main.4d91ba56.js",
-    "runtime~main.js.map": "/minesweeper-react/static/js/runtime~main.4d91ba56.js.map",
-    "static/js/2.607c5293.chunk.js": "/minesweeper-react/static/js/2.607c5293.chunk.js",
-    "static/js/2.607c5293.chunk.js.map": "/minesweeper-react/static/js/2.607c5293.chunk.js.map",
-    "index.html": "/minesweeper-react/index.html",
-    "precache-manifest.9d7f695efb9895cdc52efd19962103fc.js": "/minesweeper-react/precache-manifest.9d7f695efb9895cdc52efd19962103fc.js",
-    "service-worker.js": "/minesweeper-react/service-worker.js",
-    "static/css/main.334d6d91.chunk.css.map": "/minesweeper-react/static/css/main.334d6d91.chunk.css.map",
-    "static/media/Game.css": "/minesweeper-react/static/media/digital-7.1e670d88.ttf"
-  }
+    "main.css": "/games/minesweeper-react/static/css/main.888aa8f8.css",
+    "main.js": "/games/minesweeper-react/static/js/main.42b01b72.js",
+    "static/media/digital-7.ttf": "/games/minesweeper-react/static/media/digital-7.93911ab167c943140756.ttf",
+    "index.html": "/games/minesweeper-react/index.html",
+    "main.888aa8f8.css.map": "/games/minesweeper-react/static/css/main.888aa8f8.css.map",
+    "main.42b01b72.js.map": "/games/minesweeper-react/static/js/main.42b01b72.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.888aa8f8.css",
+    "static/js/main.42b01b72.js"
+  ]
 }
